@@ -1,0 +1,107 @@
+from time import sleep
+
+
+
+print(' ' * 11,'SEJA BEM VINDO(A)')
+menu = '''
+OPÇÕES:
+
+[1] SACAR
+[2] DEPOSITAR
+[3] EXTRATO
+[0] SAIR
+
+ESCOLHA A OPÇÃO DESEJADA: '''
+
+saldo = 0
+limite = 500
+extrato = ''
+saques_realizados = 0
+LIMITE_SAQUES = 3
+
+while True:
+
+    sleep(1)
+    print('**' * 20)
+
+    opcao = input(menu)
+
+    print('**' * 20)
+
+
+    if opcao == '2':
+          
+          valor = float(input('Digite o valor a depositar: '))
+
+          if valor > 0:
+            saldo += valor
+            extrato += f'Deposito: R${valor:.2f}\n'
+            print(f'Deposito realizado com sucesso no valor de R${valor:.2f}')
+            print('**' * 20)
+            continuar = input('Deseja realizar outra operação[S/N]? ')
+            if continuar in 'Nn':
+                print('FINALIZANDO... ')
+                sleep(1)
+                print('OPERAÇÃO FINALIZADA!')
+                break
+
+          else:  
+            print('Operação falhou! Informe um valor válido para realizar o deposito.')
+
+
+
+    if opcao == '1':
+            
+            valor = float(input('Digite o valor a sacar [MAX R$ 500.00]: '))
+
+            if valor > saldo:
+                 print(f'OPERAÇÃO FALHOU! Saldo insuficiente.')
+
+            elif valor > limite:
+                 print('OPERAÇÃO FALHOU! Valor de saque excedido. Limite máximo por saque: R$500,00')
+            
+            elif saques_realizados >= LIMITE_SAQUES:
+                 print('OPERAÇÃO FALHOU! Quantidade de saques diarios excedidos')
+            
+            elif valor > 0:
+                saldo -= valor
+                saques_realizados += 1
+                extrato += f'Saque: R${valor:.2f}\n'
+                print(f'Saque realizado com sucesso no valor de {valor:.2f}')
+                print(f'Quantidade de saques restante: {LIMITE_SAQUES - saques_realizados}')
+                print('**' * 20)
+                continuar = input('Deseja realizar outra operação[S/N]? ')
+                if continuar in 'Nn':
+                     print('FINALIZANDO... ')
+                     sleep(1)
+                     print('OPERAÇÃO FINALIZADA!')
+                     break
+
+
+    if opcao == '3':
+     
+     print('=' * 12, 'EXTRATO', '=' * 12)
+
+     if not extrato:
+          print('Nenhuma operação foi realizada.')
+     else:
+          print(extrato)
+     
+     print(f'Saldo disponível: \nR$ {saldo:.2f}')
+     print('=' * 33)
+     print('**' * 20)
+     continuar = input('Deseja realizar outra operação[S/N]? ')
+     if continuar in 'Nn':
+         print('FINALIZANDO... ')
+         sleep(1)
+         print('OPERAÇÃO FINALIZADA!')
+         break
+
+    elif opcao == '0':
+     print('FINALIZANDO... ')
+     sleep(1)
+     print('OPERAÇÃO FINALIZADA!')
+     break 
+
+    elif opcao < '0' or opcao > '3':
+         print('OPÇÃO INVÁLIDA.')
