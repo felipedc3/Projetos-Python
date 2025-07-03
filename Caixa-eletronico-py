@@ -1,0 +1,219 @@
+from time import sleep
+import sys
+
+
+
+print(' ' * 11,'SEJA BEM VINDO(A)')
+
+def menu():
+    menu = '''
+    OPÇÕES:
+
+    [1] SACAR
+    [2] DEPOSITAR
+    [3] EXTRATO
+    [4] CADASTRAR NOVO USUÁRIO
+    [5] NOVA CONTA
+    [6] LISTAR CONTAS
+    [0] SAIR
+
+
+ESCOLHA A OPÇÃO DESEJADA: '''
+    return input(menu)
+
+def depositar(saldo, valor, extrato):
+    if valor > 0:
+        saldo += valor
+        extrato += f'Deposito: R${valor:.2f}\n'
+        print(f'Deposito realizado com sucesso no valor de R${valor:.2f}')
+        print('**' * 20)
+        continuar = input('Deseja realizar outra operação[S/N]? ')
+        if continuar in 'Nn':
+            print('FINALIZANDO... ')
+            sleep(1)
+            print('OPERAÇÃO FINALIZADA!')
+            sys.exit()
+    else:  
+        print('Operação falhou! Informe um valor válido para realizar o deposito.')
+    return saldo, extrato
+
+def sacar(*, saldo, extrato, valor, limite, saques_realizados, limite_saques):
+
+    if valor > saldo:
+        print(f'OPERAÇÃO FALHOU! Saldo insuficiente.')
+
+    elif valor > limite:
+        print('OPERAÇÃO FALHOU! Valor de saque excedido. Limite máximo por saque: R$500,00')
+                
+    elif saques_realizados >= limite_saques:
+        print('OPERAÇÃO FALHOU! Quantidade de saques diarios excedidos')
+                
+    elif valor > 0:
+        saldo -= valor
+        extrato += f'Saque: R${valor:.2f}\n'
+        saques_realizados += 1
+        print(f'Saque realizado com sucesso no valor de R${valor:.2f}')
+        print(f'Quantidade de saques restante: {limite_saques - saques_realizados}')
+        print('**' * 20)
+        continuar = input('Deseja realizar outra operação[S/N]? ')
+        if continuar in 'Nn':
+            print('FINALIZANDO... ')
+            sleep(1)
+            print('OPERAÇÃO FINALIZADA!')
+            sys.exit()
+            
+
+    else:
+        print('OPERAÇÃO FALHOU! Valor inválido informado')
+
+    return saldo, extrato, saques_realizados
+            
+def extrato_total(saldo, /, *, extrato):
+
+    print('=' * 12, 'EXTRATO', '=' * 12)
+
+    if not extrato:
+        print('Nenhuma operação foi realizada.')
+    else:
+        print(extrato)
+        
+        print(f'Saldo disponível: \nR$ {saldo:.2f}')
+        print('=' * 33)
+        print('**' * 20)
+    continuar = input('Deseja realizar outra operação[S/N]? ')
+    if continuar in 'Nn':
+        print('FINALIZANDO... ')
+        sleep(1)
+        print('OPERAÇÃO FINALIZADA!')
+        sys.exit()
+
+def novo_usuario(usuarios):
+    num_cpf = input("Informe seu CPF[somente números]: ")
+
+    if not num_cpf.isdigit():
+            print("CPF inválido! Por favor, digite apenas números.")
+            return
+
+    usuario = filtrar_usuario(num_cpf, usuarios)
+
+
+    if usuario:
+        print('\nJá existe usuário com esse CPF!')
+        return
+
+    nome = input('Informe o nome completo: ')
+    data_nascimento = input('Informe a data de nascimento (dd-mm-aaaa): ')
+    endereco = input('Informe o endereço (logradouro, nro - bairro - cidade/sigla estado): ')
+
+    usuarios.append({'nome': nome, 'data_nascimento': data_nascimento, 'cpf': num_cpf, 'endereco': endereco})
+
+    print('=== Usuário criado com sucesso! ===')
+
+    continuar = input('Deseja realizar outra operação[S/N]? ')
+    if continuar in 'Nn':
+        print('FINALIZANDO... ')
+        sleep(1)
+        print('OPERAÇÃO FINALIZADA!')
+        sys.exit()
+
+def filtrar_usuario(cpf_novo, usuarios):
+    usuarios_filtrados = [usuario for usuario in usuarios if usuario["cpf"] == cpf_novo]
+    return usuarios_filtrados[0] if usuarios_filtrados else None
+
+def criar_conta(agencia, numero_conta, usuarios):
+    num_cpf = input('Informe o CPF do usuário: ')
+    usuario = filtrar_usuario(num_cpf, usuarios)
+
+    if usuario:
+        print('\n=== Conta criada com sucesso! ===')
+        return {'agencia': agencia, 'numero_conta': numero_conta, 'usuario': usuario}
+
+    print('\nUsuário não encontrado, tentativa de criação de conta encerrada!')
+
+    continuar = input('Deseja realizar outra operação[S/N]? ')
+    if continuar in 'Nn':
+        print('FINALIZANDO... ')
+        sleep(1)
+        print('OPERAÇÃO FINALIZADA!')
+        sys.exit()
+
+def listar_contas(contas):
+    for conta in contas:
+        linha = f"""\
+            Agência:\t{conta['agencia']}
+            C/C:\t{conta['numero_conta']}
+            Titular:\t{conta['usuario']['nome']}
+        """
+        print('=' * 100)
+        print(linha)
+
+    continuar = input('Deseja realizar outra operação[S/N]? ')
+    if continuar in 'Nn':
+        print('FINALIZANDO... ')
+        sleep(1)
+        print('OPERAÇÃO FINALIZADA!')
+        sys.exit()
+
+
+
+def main():
+    saldo = 0
+    limite = 500
+    extrato = ''
+    saques_realizados = 0
+    LIMITE_SAQUES = 3
+    AGENCIA = '0001'
+    usuarios = []
+    contas = []
+
+    while True:
+
+        sleep(1)
+        print('**' * 20)
+
+        opcao = menu()
+
+        print('**' * 20)
+
+
+        if opcao == '2':
+            valor = float(input('Digite o valor a depositar: '))
+
+            saldo, extrato = depositar(saldo, valor, extrato)
+         
+                    
+        elif opcao == '1':
+            valor = float(input('Digite o valor a sacar [MAX R$ 500.00]: '))
+
+            saldo, extrato, saques_realizados = sacar(saldo=saldo, extrato=extrato, valor=valor, limite=limite, saques_realizados=saques_realizados, limite_saques=LIMITE_SAQUES)
+               
+
+        elif opcao == '3':
+            extrato_total(saldo, extrato=extrato)
+
+
+        elif opcao == '4':
+            novo_usuario(usuarios)
+        
+        elif opcao == '5':
+            numero_conta = len(contas) + 1
+            nova_conta = criar_conta(AGENCIA, numero_conta, usuarios)
+
+            if nova_conta:
+                contas.append(nova_conta)
+
+        elif opcao == '6':   
+            listar_contas(contas)
+
+        elif opcao == '0':
+            print('FINALIZANDO... ')
+            sleep(1)
+            print('OPERAÇÃO FINALIZADA!')
+            break 
+
+
+        else:
+            print('OPÇÃO INVÁLIDA.')
+
+
+main()
